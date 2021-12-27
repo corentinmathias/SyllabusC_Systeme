@@ -8,9 +8,9 @@
 Structure du système d'exploitation
 ===================================
 
-L'objectif de ce chapitre est de présenter les grands principes de mise en œuvre d'un système d'exploitation (SE), que nous avons déjà survolé dans le chapitre d'introduction.
+L'objectif de ce chapitre est de présenter les grands principes de mise en œuvre d'un système d'exploitation (SE), que nous avons déjà survolés dans le chapitre d'introduction.
 On commencera par présenter les différents types de services fournis par un système d'exploitation, pour ensuite détailler l'interface offerte par le noyau aux programmes et aux librairies œuvrant en espace utilisateur.
-Cette interface est composée d'*appels systèmes* : nous en nous étudierons la mise en œuvre et l'utilisation.
+Cette interface est composée d'*appels systèmes* : nous en étudierons la mise en œuvre et l'utilisation.
 Nous verrons ensuite différentes manières de structurer logiquement le :term:`noyau` du système d'exploitation, et discuterons des avantages et inconvénients associés aux différentes approches.
 Nous aborderons enfin le processus de démarrage du SE.
 
@@ -36,14 +36,14 @@ L'entrée du programme et de ses données se faisant en effet manuellement.
 Le rôle du gestionnaire de traitement par lot était alors tenu par un humain.
 Ce mode d'utilisation reste de nos jours très utilisé dans les centres de calcul à haute performance, par exemple pour réaliser des simulations de processus physiques ou biologiques.
 
-.. note:: Planifier l'exécution de programmes dans un système interactifs
+.. note:: Planifier l'exécution de programmes dans un système interactif
 
  Lorsque l'utilisateur envoie une commande au :term:`shell`, le programme correspondant est exécuté immédiatement, contrairement au mode de traitement par lot.
  Il peut être parfois nécessaire de prévoir à l'avance l'exécution d'une commande, ou bien de réaliser cette exécution de façon périodique.
  Par exemple, l'exécution d'un utilitaire préparant un rapport sur l'utilisation des ressources du système peut être déclenché chaque nuit et pourra envoyer un message à l'administrateur si un quota d'utilisation est dépassé.
  
  La commande `crontab(1)`_ permet de planifier l'exécution périodique d'une commande.
- La commande `at(1posix)`_ permet quand à elle de demander l'exécution d'une commande à un temps absolu ou relatif, donné, comme dans l'exemple qui suit.
+ La commande `at(1posix)`_ permet quant à elle de demander l'exécution d'une commande à un temps absolu ou relatif, donné, comme dans l'exemple qui suit.
  
  .. code-block:: bash
  
@@ -71,7 +71,7 @@ Lorsqu'un processus est en cours d'exécution, le système d'exploitation peut p
 
 Tout d'abord, une erreur peut survenir lors de l'exécution du programme.
 Le système d'exploitation permet alors de récupérer des informations sur l'erreur elle-même, ainsi qu'à propose de son contexte d'apparition (comme, par exemple, l'ensemble du contenu de la mémoire au moment de son occurence).
-Des exemples d'erreurs classiques sont listées ci-dessous.
+Des exemples d'erreurs classiques sont listés ci-dessous.
 
 - L'accès à un segment de mémoire non autorisé, si par exemple le programme essaie de lire une adresse au dessus de la limite du stack (et donc avant que celle-ci ne soit étendue avec un appel à `sbrk(2)`_), ou bien essaie de lire une adresse d'un des segments réservés du système d'exploitation au début ou à la fin de l'espace mémoire du processus, ou encore essaie d'*écrire* à une des adresses du :term:`segment text`. 
 - L'utilisation d'une opération arithmétique non supportée, comme par exemple une division par 0.
@@ -103,7 +103,7 @@ Ces services sont fournis via des abstractions facilement manipulables par un pr
 
 .. note:: Les drivers de périphériques
 
- Bien que le système d'exploitation fournisse aux applications une abstraction unique pour une même classe de périphériques, ces périphériques sont de mise en œuvre matérielle variées et ne répondent pas toujours au même jeu de commandes, même lorsqu'ils ont le même objectif.
+ Bien que le système d'exploitation fournisse aux applications une abstraction unique pour une même classe de périphériques, ces périphériques sont de mises en œuvre matérielles variées et ne répondent pas toujours au même jeu de commandes, même lorsqu'ils ont le même objectif.
  Par exemple, un adaptateur réseau d'une marque ou d'une génération donnée pourra répondre à des commandes de contrôle qu'un autre adaptateur réseau ne supportera pas.
  Pour pallier cette hétérogénéité, le :term:`noyau` du système d'exploitation utilise des *drivers de périphériques*.
  Ces modules logiciel très bas niveau reçoivent des commandes d'entrée/sortie génériques en entrée, et les traduisent en des commandes spécifiques à un matériel donné.
@@ -112,12 +112,12 @@ Ces services sont fournis via des abstractions facilement manipulables par un pr
 Partage de ressources
 ^^^^^^^^^^^^^^^^^^^^^
 
-Les services fournis aux applications, aux développeurs et aux utilisateurs permettent l'utilisation simplifiée mais aussi *mutualisée* des resources matérielles.
+Les services fournis aux applications, aux développeurs et aux utilisateurs permettent l'utilisation simplifiée mais aussi *mutualisée* des ressources matérielles.
 Plusieurs utilisateurs peuvent ainsi utiliser le même système simultanément et chaque utilisateur peut utiliser plusieurs applications.
-Un rôle majeur du système d'exploitation dans ce contexte est la mise en œuvre du partage des resources, en visant plusieurs objectifs :
+Un rôle majeur du système d'exploitation dans ce contexte est la mise en œuvre du partage des ressources, en visant plusieurs objectifs :
 
-- On souhaite que les ressources soient utilisées de façon efficace afin de maximiser l'utilité du système. Par exemple, il n'est pas toujours souhaitable qu'un processus en attente de la fin d'une opération d'entrée/sortie occupe le processeur à exécuter une boucle d'attente active (i.e., une boucle ``while`` vérifiant de façon répétée qu'une donnée soit disponible pour être consommée, et ce jusqu'à ce soit le cas).
-- Les resources partagées doivent l'être de manière équitable, ou tout au moins qui suive les règles de priorité qui ont été choisies pour ce système. 
+- On souhaite que les ressources soient utilisées de façon efficace afin de maximiser l'utilité du système. Par exemple, il n'est pas toujours souhaitable qu'un processus en attente de la fin d'une opération d'entrée/sortie occupe le processeur à exécuter une boucle d'attente active (i.e., une boucle ``while`` vérifiant de façon répétée qu'une donnée soit disponible pour être consommée, et ce jusqu'à ce que ça soit le cas).
+- Les ressources partagées doivent l'être de manière équitable, ou tout au moins qui suive les règles de priorité qui ont été choisies pour ce système. 
 - Enfin, il est nécessaire d'isoler l'accès aux ressources utilisées par un processus et/ou un utilisateur de l'accès aux autres ressources.
 
 Ce partage nécessite donc des services spécifiques permettant :
@@ -131,7 +131,7 @@ Appels systèmes
 
 .. index:: kernel
 
-Outre l'utilisation de fonctions de librairies, les programmes doivent donc interagir avec le système d'exploitation afin d'utiliser les services que celui ci fournit.
+Outre l'utilisation de fonctions de librairies, les programmes doivent donc interagir avec le système d'exploitation afin d'utiliser les services que celui-ci fournit.
 
 Un système d'exploitation comme Unix comprend à la fois des utilitaires comme `grep(1)`_, `ls(1)`_, ... qui sont directement exécutables depuis le shell et un noyau ou :term:`kernel` en anglais.
 Le :term:`kernel` contient les fonctions de base du système d'exploitation qui lui permettent à la fois d'interagir avec le matériel mais aussi de gérer les processus des utilisateurs. 
@@ -220,7 +220,7 @@ Il n'est pas nécessairement utile de comprendre l'intégralité de ces lignes, 
 - Enfin, l'appel `write(2)`_ est utilisé pour envoyer vers :term:`STDOUT` la chaîne de caractères formatée par la fonction correspondante de la librairie standard, `printf(3)`_.
 
 Si, dans cet exemple, on voit une correspondance assez directe entre une fonction de la librairie standard (`printf(3)`_) et un appel système, certaines fonctions de la librairie, ou bien certains utilitaires, utilisent de très nombreux appels systèmes pour réaliser leur fonction.
-Pour reprendre l'exemple cité précédemment du débogueur gdb, celui-ci va effectuer de nombreux appels systèmes au services du :term:`noyau` permettant le contrôle d'un processus en cours d'exécution, en en particulier l'appel `ptrace(2)`_.
+Pour reprendre l'exemple cité précédemment du débogueur gdb, celui-ci va effectuer de nombreux appels systèmes aux services du :term:`noyau` permettant le contrôle d'un processus en cours d'exécution, en en particulier l'appel `ptrace(2)`_.
 
 Architecture logicielle des systèmes d'exploitation
 ===================================================
@@ -258,18 +258,18 @@ Les applications peuvent, par ailleurs, accéder directement aux gestionnaires d
 
 .. note:: Quand un système simple et concis devient la base d'une industrie
 
- Le système MS-DOS a été originalement conçu pour des ordinateurs aux capacités très limités au début des années 1980.
+ Le système MS-DOS a été originalement conçu pour des ordinateurs aux capacités très limitées au début des années 1980.
  On comprend, dès lors, la volonté de rendre le code le plus petit et le plus simple possible.
  MS-DOS est un bon exemple de logiciel qui n'a pas été pensé à la base pour être étendu et adapté à des ordinateurs plus complexes ou avec plus de ressources, mais qui a eu une durée de vie importante pour des raisons commerciales et ce bien au delà des intentions initiales.
  Ce manque de structuration et d'isolation originel a eu des conséquences importantes sur la complexité et l'évolution des systèmes informatiques de type PC.
  Par exemple, lors de la conception de MS-DOS, l'espace mémoire disponible a été fixé à une capacité maximale de 640 Kilo-octets.
- L'utilisation de mémoire supplémentaire a été rendu possible par la suite grâce à un mécanisme dit de *mémoire étendue* dont l'utilisation n'est pas transparente pour l'application, ce qui rend la programmation inutilement complexe.
+ L'utilisation de mémoire supplémentaire a été rendue possible par la suite grâce à un mécanisme dit de *mémoire étendue* dont l'utilisation n'est pas transparente pour l'application, ce qui rend la programmation inutilement complexe.
  L'absence d'une structure claire et de propriétés d'isolation a aussi été la source d'un grand nombre de vulnérabilités et de problèmes de sécurité dans MS-DOS et les systèmes s'y appuyant, comme les premiers systèmes Microsoft Windows.
 
 Les systèmes monolithiques multi-utilisateurs : UNIX
 ----------------------------------------------------
 
-Les premières version du système d'exploitation UNIX visaient une utilisation en partage de temps entre plusieurs applications et plusieurs utilisateurs.
+Les premières versions du système d'exploitation UNIX visaient une utilisation en partage de temps entre plusieurs applications et plusieurs utilisateurs.
 Le support pour l'isolation entre les applications (les processus) était donc primordial.
 Le matériel visé par ce système supportait déjà matériellement cette isolation, avec les deux modes d'exécution utilisateur et protégé.
 Contrairement à MS-DOS, l'interface entre les applications et le :term:`noyau` était clairement définie.
@@ -300,7 +300,7 @@ Dans les deux cas, il ne sera pas nécessaire de modifier le code au niveau 2.
 La recherche de bugs sera aussi facilitée : on peut tester les fonctionnalités de la couche N avant de mettre en œuvre les fonctionnalités de la couche N+1.
 
 Toutefois, cette architecture en couche présente aussi deux inconvénients.
-Le premier est que le service des appels systèmes doivent désormais utiliser une succession d'appels entre les couches.
+Le premier est que le service des appels systèmes doit désormais utiliser une succession d'appels entre les couches.
 Chaque couche va devoir traiter un appel, mettre à jour des structures de données, et préparer un ou plusieurs appels pour les couches inférieures, ce qui peut introduire un surcoût à l'exécution par rapport à une approche monolithique.
 Cet inconvénient est relativement limité sur un système moderne où l'exécution du code n'est pas le facteur limitant, mais plutôt l'accès à la mémoire.
 La deuxième inconvénient est qu'il n'est pas aisé de structurer clairement un :term:`noyau` de système d'exploitation de cette façon, car les services systèmes sont souvent interdépendants. 
@@ -332,7 +332,7 @@ Enfin, l'utilisation de modules résout le problème de l'interdépendance entre
  Sous Linux, des utilitaires systèmes permettent de charger et décharger des modules dans le noyau.
  Puisque ces modules vont devenir partie du code du noyau, ces opérations sont réservées aux utilisateurs avec un niveau de privilège élevé dans le système, typiquement les administrateurs.
  Ceux-ci peuvent par ailleurs mettre en place le chargement automatique de modules.
- Par exemple, le module `exFAT` pourrait n'être chargé automatiquement que lorsqu'une clé USB à ce format, en provenance d'un ordinateur Windows, est inséré dans un des ports USB de la machine.
+ Par exemple, le module `exFAT` pourrait n'être chargé automatiquement que lorsqu'une clé USB à ce format, en provenance d'un ordinateur Windows, est insérée dans un des ports USB de la machine.
  
  La commande ``sudo lsmod`` permet de lister les modules présents.
  On voit un court extrait d'une sortie de cette commande ci-dessous.
@@ -369,8 +369,8 @@ Enfin, l'utilisation de modules résout le problème de l'interdépendance entre
 Structure en micro-noyau (L4)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Les structures monolithiques, en couche, et utilisant des modules présentées précédemment ont toutes un défaut en commun : la quantité de code exécutée en mode protégé au sein du noyau est très importante.
-Ceci pose un problème de fiabilité : une fonctionnalité incorrectement mise en œuvre dans le noyau (par exemple, qui accède à des adresses mémoires incohérentes en déréférencant un pointeur mal initialisé, ou qui utilisent une instruction de contrôle du matériel mal formée) peuvent affecter l'ensemble du noyau et donc l'ensemble du système.
+Les structures monolithiques, en couches, et utilisant des modules présentés précédemment ont toutes un défaut en commun : la quantité de code exécutée en mode protégé au sein du noyau est très importante.
+Ceci pose un problème de fiabilité : une fonctionnalité incorrectement mise en œuvre dans le noyau (par exemple, qui accède à des adresses mémoires incohérentes en déréférencant un pointeur mal initialisé, ou qui utilise une instruction de contrôle du matériel mal formée) peut affecter l'ensemble du noyau et donc l'ensemble du système.
 Cela peut résulter en un crash complet de la machine voire, ce qui est encore moins souhaitable, en des corruptions des données ou en des fautes exploitables par des logiciels malicieux pour effectuer des opérations non autorisées (comme, par exemple, casser la propriété d'isolation).
 
 Le concept de micro-noyau est une réponse à ce problème.
@@ -386,12 +386,12 @@ Le micro-noyau se charge alors d'acheminer entre les deux processus les messages
 Les micro-noyaux ont un avantage majeur : le code fonctionnant en mode protégé est réduit au minimum et on peut alors se concentrer sur sa qualité.
 Les contributions logicielles externes, comme les drivers de périphériques, peuvent contenir des erreurs ou essayer d'utiliser des instructions interdites.
 Cela ne mettra toutefois pas en cause l'intégrité du système : comme pour un processus utilisateur qui effectuerait une opération interdite, le processus contenant le driver fautif sera simplement terminé (et éventuellement relancé) mais le reste du système ne sera pas affecté.
-Le même raisonnement s'applique pour les fonctionnalités complexes, comme les systèmes de fichiers, donc la mise en œuvre peut atteindre plusieurs dizaines voire centaines de milliers de lignes de code C.
+Le même raisonnement s'applique pour les fonctionnalités complexes, comme les systèmes de fichiers, dont la mise en œuvre peut atteindre plusieurs dizaines voire centaines de milliers de lignes de code C.
 On comprend l'importance qu'a cette isolation lorsque l'on considère, comme le montre l'étude de Chou *et al.* en 2001 [Chou2001]_ ou celle de Palix *et al.* en 2011 [Palix2011]_ que les branches `drivers` et `fs` du noyau Linux contiennent souvent jusqu'à 7 fois plus d'erreur par millier de lignes de code que les autres branches.
 
 La principale raison pour laquelle le concept de micro-noyau n'est pas aussi répandu est que sa mise en œuvre efficace est particulièrement délicate.
 En particulier, le mécanisme de passage de message *via* le noyau, qui remplace l'appel direct de fonctions entre modules, est plus coûteux que ce dernier.
-À la place de placer des arguments sur la pile et de rediriger le compteur de programme vers une autre adresse du noyau, comme c'est le cas dans un noyau monolithique, avec un micro-noyau il est nécessaire de redonner le contrôle au système d'exploitation, qui doit copier le message à transmettre de l'espace mémoire d'un processus à un autre, et mettre en place plusieurs changements de contexte.
+Au lieu de placer des arguments sur la pile et de rediriger le compteur de programme vers une autre adresse du noyau, comme c'est le cas dans un noyau monolithique, avec un micro-noyau il est nécessaire de redonner le contrôle au système d'exploitation, qui doit copier le message à transmettre de l'espace mémoire d'un processus à un autre, et mettre en place plusieurs changements de contexte.
 Cette opération, répétée de très nombreuses fois, peut gréver la performance si elle n'est pas parfaitement optimisée.
 On peut illustrer ce phénomène avec le système d'exploitation historique Windows NT, introduit dans les années 1990.
 Ce système d'exploitation était le premier système Windows qui ne dépendait pas du tout de MS-DOS.
